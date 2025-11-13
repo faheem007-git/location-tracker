@@ -1,0 +1,83 @@
+<!-- static/device_sender.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Device Sender</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+</head>
+<body style="font-family:Arial;padding:12px;">
+  <h3>Send live location</h3>
+
+  <label>Phone number:<br/>
+    <input id="phone" placeholder="+919876543210" style="width:100%;padding:8px"/>
+  </label>
+
+  <label>Display name (optional):<br/>
+    <input id="name" placeholder="Ravi" style="width:100%;padding:8px;margin-top:6px;"/>
+  </label>
+
+  <div style="margin-top:10px;">
+    <button id="startBtn">Start sending</button>
+    <button id="stopBtn" disabled>Stop</button>
+  </div>
+
+  <p id="status" style="margin-top:8px;color:green"></p>
+
+  <script>
+    const API = '/update'; // or /update_location if your app uses that endpoint
+    const API_KEY = ''; // if your server expects an API key, add header logic below
+    let watchId = null;
+
+    function sendPosition(coords) {
+      const phone = document.getElementById('phone').value.trim();
+      const name = document.getElementById('name').value.trim();
+      if (!phone) {
+        alert('Enter phone number first');
+        return;
+      }
+      const payload = {
+        phone: phone,
+        latitude: coords.latitude,
+        longitude: coords.longitude
+      };
+      if (name) payload.name = name;
+
+      fetch(API, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      }).then(r => {
+        if (!r.ok) throw new Error('Network error');
+        document.getElementById('status').innerText = 'Last sent: ' + new Date().toLocaleTimeString();
+      }).catch(e => {
+        document.getElementById('status').innerText = 'Send failed: ' + e.message;
+      });
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      const phone = document.getElementById('phone').value.trim();
+      if (!phone) { alert('Enter phone number'); return; }
+      if (!navigator.geolocation) { alert('Geolocation not supported'); return; }
+
+      watchId = navigator.geolocation.watchPosition(p => {
+        sendPosition(p.coords);
+      }, e => {
+        alert('Geolocation error: ' + e.message);
+      }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 });
+
+      document.getElementById('startBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+      document.getElementById('status').innerText = 'Sending...';
+    });
+
+    document.getElementById('stopBtn').addEventListener('click', () => {
+      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+      document.getElementById('status').innerText = 'Stopped';
+    });
+  </script>
+</body>
+</html>

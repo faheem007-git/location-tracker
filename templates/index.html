@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Location Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #4E56C0, #9B5DE0, #D78FEE, #FDCFFA);
+            background-size: 400% 400%;
+            animation: gradient 10s ease infinite;
+            color: white;
+            text-align: center;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            padding: 15px;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 3px #000;
+        }
+
+        #map {
+            height: 85vh;
+            margin: 10px auto;
+            width: 90%;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        #footer {
+            font-size: 0.9rem;
+            padding-bottom: 10px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>📍 Live Location Tracker</h1>
+    <div id="map"></div>
+    <div id="footer">Tracking multiple devices securely with masked phone numbers</div>
+</body>
+</html>
